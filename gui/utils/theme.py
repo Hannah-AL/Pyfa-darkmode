@@ -41,10 +41,43 @@ def _themedGetColour(index):
     return _originalGetColour(index)
 
 
-def applyTheme():
+def installThemeOverride():
     """Install the dark mode colour override.
 
     Call this once at startup, before any windows are created.
     It monkey-patches wx.SystemSettings.GetColour so that all widgets
     that read system colours will automatically get dark colours."""
     wx.SystemSettings.GetColour = staticmethod(_themedGetColour)
+
+
+def applyThemeToWindow(window):
+    """Recursively apply theme colours to a window and all its children.
+
+    This handles widgets that set their colours at creation time rather
+    than reading system colours at paint time."""
+    if not isDark():
+        return
+    bg = _DARK_COLOUR_MAP[wx.SYS_COLOUR_WINDOW]
+    fg = _DARK_COLOUR_MAP[wx.SYS_COLOUR_WINDOWTEXT]
+    inputBg = _DARK_COLOUR_MAP.get(wx.SYS_COLOUR_LISTBOX, bg)
+    _applyRecursive(window, bg, fg, inputBg)
+
+
+def _applyRecursive(window, bg, fg, inputBg):
+    """Walk a window tree and set colours on each widget."""
+    try:
+        className = window.GetClassName()
+        if className in ('wxTextCtrl', 'wxSearchCtrl', 'wxListCtrl',
+                         'wxListView', 'wxTreeCtrl', 'wxDataViewCtrl',
+                         'wxStyledTextCtrl', 'wxHtmlWindow',
+                         'wxScrolledWindow'):
+            window.SetBackgroundColour(inputBg)
+        else:
+            window.SetBackgroundColour(bg)
+        window.SetForegroundColour(fg)
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        pass
+    for child in window.GetChildren():
+        _applyRecursive(child, bg, fg, inputBg)

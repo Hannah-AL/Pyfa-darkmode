@@ -14,8 +14,8 @@ class PyfaApp(wx.App):
         """
 
         # Install dark mode theme colour overrides
-        from gui.utils.theme import applyTheme
-        applyTheme()
+        from gui.utils.theme import installThemeOverride
+        installThemeOverride()
 
         # Enable native dark mode on Windows when appropriate
         if 'wxMSW' in wx.PlatformInfo:

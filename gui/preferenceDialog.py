@@ -21,6 +21,7 @@
 import wx
 from gui.preferenceView import PreferenceView
 from gui.bitmap_loader import BitmapLoader
+from gui.utils.theme import applyThemeToWindow
 
 _t = wx.GetTranslation
 
@@ -75,6 +76,8 @@ class PreferenceDialog(wx.Dialog):
         self.SetSize(width, height)
 
         self.Layout()
+
+        applyThemeToWindow(self)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.kbEvent)
         self.btnOK.Bind(wx.EVT_BUTTON, self.OnBtnOK)

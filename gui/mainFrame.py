@@ -62,6 +62,7 @@ from gui.targetProfileEditor import TargetProfileEditor
 from gui.updateDialog import UpdateDialog
 from gui.utils.clipboard import fromClipboard
 from gui.utils.progressHelper import ProgressHelper
+from gui.utils.theme import applyThemeToWindow
 from service.character import Character
 from service.esi import Esi
 from service.fit import Fit
@@ -222,6 +223,9 @@ class MainFrame(wx.Frame):
         self.activeStatsWnd = None
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+
+        # Apply dark/light theme colours to all widgets
+        applyThemeToWindow(self)
 
         # Show ourselves
         self.Show()
