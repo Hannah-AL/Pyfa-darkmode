@@ -79,6 +79,33 @@ parser.add_option("-i", "--language", action="store", dest="language", help="Set
 
 if __name__ == "__main__":
 
+    # Apply dark mode theme before wx is imported, since GTK_THEME must be
+    # set before GTK initializes for it to take effect.
+    try:
+        import pickle
+        if options.savepath:
+            _save_dir = options.savepath
+        elif options.rootsavedata:
+            _save_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "saveddata")
+        else:
+            _save_dir = os.path.expanduser(os.path.join("~", ".pyfa"))
+        _display_settings_path = os.path.join(_save_dir, "settings", "pyfaDisplay")
+        if os.path.exists(_display_settings_path):
+            with open(_display_settings_path, "rb") as _f:
+                _display_info = pickle.load(_f)
+            _dark_override = _display_info.get("darkModeOverride", "system")
+            if _dark_override == "dark":
+                os.environ["GTK_THEME"] = os.environ.get("GTK_THEME", "Adwaita") + ":dark"
+            elif _dark_override == "light":
+                # Strip any :dark suffix from GTK_THEME if present
+                _current = os.environ.get("GTK_THEME", "")
+                if _current.endswith(":dark"):
+                    os.environ["GTK_THEME"] = _current[:-5]
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        pass
+
     try:
         # first and foremost - check required libraries
         version_precheck()

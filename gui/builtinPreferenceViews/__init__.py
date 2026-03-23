@@ -1,5 +1,6 @@
 __all__ = [
     "pyfaGeneralPreferences",
+    "pyfaDisplayPreferences",
     "pyfaHTMLExportPreferences",
     "pyfaUpdatePreferences",
     "pyfaNetworkPreferences",

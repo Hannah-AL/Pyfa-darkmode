@@ -4,7 +4,7 @@ import os
 import sys
 from logbook import Logger
 pyfalog = Logger(__name__)
-from service.settings import LocaleSettings
+from service.settings import LocaleSettings, SettingsProvider
 
 
 class PyfaApp(wx.App):
@@ -12,6 +12,19 @@ class PyfaApp(wx.App):
         """
         Do application initialization work, e.g. define application globals.
         """
+
+        # Enable native dark mode on Windows when appropriate
+        if 'wxMSW' in wx.PlatformInfo:
+            try:
+                displaySettings = SettingsProvider.getInstance().getSettings(
+                    "pyfaDisplay", {"darkModeOverride": "system"})
+                override = displaySettings["darkModeOverride"]
+                if override != "light":
+                    self.MSWEnableDarkMode()
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                pass
 
         # Name for my application.
         self.appName = "pyfa"
