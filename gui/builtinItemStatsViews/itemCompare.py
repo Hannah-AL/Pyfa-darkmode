@@ -36,7 +36,7 @@ class ItemCompare(wx.Panel):
         self.item = item
         self.items = sorted(items, key=defaultSort)
         self.attrs = {}
-        self.HighlightOn = wx.Colour(255, 255, 0, wx.ALPHA_OPAQUE)
+        self.HighlightOn = wx.Colour(88, 101, 242, wx.ALPHA_OPAQUE)
         self.highlightedNames = []
 
         # get a dict of attrName: attrInfo of all unique attributes across all items

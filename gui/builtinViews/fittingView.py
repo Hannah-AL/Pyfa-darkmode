@@ -953,8 +953,8 @@ class FittingView(d.Display):
 
             cx += columnsWidths[i]
 
-        brush = wx.Brush(wx.Colour(224, 51, 51))
-        pen = wx.Pen(wx.Colour(224, 51, 51))
+        brush = wx.Brush(wx.Colour(242, 63, 66))
+        pen = wx.Pen(wx.Colour(242, 63, 66))
 
         mdc.SetPen(pen)
         mdc.SetBrush(brush)

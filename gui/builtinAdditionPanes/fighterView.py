@@ -115,7 +115,7 @@ class FighterView(wx.Panel):
                     slot = getattr(FittingSlot, "F_{}".format(x.upper()))
                 used = fit.getSlotsUsed(slot)
                 total = fit.getNumSlots(slot)
-                color = wx.Colour(204, 51, 51) if used > total else wx.SystemSettings.GetColour(
+                color = wx.Colour(242, 63, 66) if used > total else wx.SystemSettings.GetColour(
                     wx.SYS_COLOUR_WINDOWTEXT)
 
                 lbl = getattr(self, "label%sUsed" % x.capitalize())

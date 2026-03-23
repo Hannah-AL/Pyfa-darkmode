@@ -30,7 +30,7 @@ class PyGauge(wx.Window):
 
         self._size = size
 
-        self._border_colour = wx.BLACK
+        self._border_colour = wx.Colour(30, 31, 34)
         self._bar_colour = None
         self._bar_gradient = None
 
@@ -54,10 +54,10 @@ class PyGauge(wx.Window):
 
         # transition colors used based on how full (or overfilled) the gauge is.
         self.transition_colors = [
-            (wx.Colour(191, 191, 191), wx.Colour(96, 191, 0)),  # < 0-100%
-            (wx.Colour(191, 167, 96), wx.Colour(255, 191, 0)),  # < 100-101%
-            (wx.Colour(255, 191, 0), wx.Colour(255, 128, 0)),  # < 101-103%
-            (wx.Colour(255, 128, 0), wx.Colour(255, 0, 0))  # < 103-105%
+            (wx.Colour(148, 155, 164), wx.Colour(35, 165, 90)),   # < 0-100%: muted to green
+            (wx.Colour(240, 177, 50), wx.Colour(240, 137, 30)),   # < 100-101%: yellow to orange
+            (wx.Colour(240, 137, 30), wx.Colour(242, 93, 66)),    # < 101-103%: orange to red-orange
+            (wx.Colour(242, 93, 66), wx.Colour(242, 63, 66))      # < 103-105%: red-orange to red
         ]
 
         self.gradient_effect = -35
@@ -68,7 +68,7 @@ class PyGauge(wx.Window):
 
         self.font = font
 
-        self.SetBackgroundColour(wx.Colour(51, 51, 51))
+        self.SetBackgroundColour(wx.Colour(30, 31, 34))
 
         self._tooltip = wx.ToolTip("0.00/100.00")
         self.SetToolTip(self._tooltip)
@@ -296,7 +296,7 @@ class PyGauge(wx.Window):
                 color = color_utils.CalculateTransition(start_color, end_color,
                                                         xv)
             else:
-                color = wx.Colour(191, 48, 48)  # dark red
+                color = wx.Colour(242, 63, 66)  # Discord red
 
             color_factor = self.gradient_effect / 100
             mid_factor = (self.gradient_effect / 2) / 100
@@ -330,7 +330,7 @@ class PyGauge(wx.Window):
         if self._max_range == 0.01 and self._value > 0:
             format_ = u'\u221e'  # infinity symbol
             # drop shadow
-            dc.SetTextForeground(wx.Colour(80, 80, 80))  # dark grey
+            dc.SetTextForeground(wx.Colour(30, 31, 34))  # dark grey
             dc.DrawLabel(format_, r, wx.ALIGN_CENTER)
             # text
             dc.SetTextForeground(wx.WHITE)
@@ -350,7 +350,7 @@ class PyGauge(wx.Window):
                 format_ = "{{0:.{0}f}}%".format(str(self._fraction_digits))
 
             # drop shadow
-            dc.SetTextForeground(wx.Colour(80, 80, 80))
+            dc.SetTextForeground(wx.Colour(30, 31, 34))
             dc.DrawLabel(format_.format(value), r, wx.ALIGN_CENTER)
             # text
             dc.SetTextForeground(wx.WHITE)

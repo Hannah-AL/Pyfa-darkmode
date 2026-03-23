@@ -68,12 +68,12 @@ CATALOG = 'lang'
 
 
 slotColourMapDark = {
-    FittingSlot.LOW: wx.Colour(44, 36, 19),  # yellow = low slots 24/13
-    FittingSlot.MED: wx.Colour(28, 39, 51),  # blue   = mid slots 8.1/9.5
-    FittingSlot.HIGH: wx.Colour(53, 31, 34),  # red    = high slots 6.5/11.5
+    FittingSlot.LOW: wx.Colour(58, 52, 36),   # warm gold tint for low slots
+    FittingSlot.MED: wx.Colour(36, 45, 65),   # cool blue tint for mid slots
+    FittingSlot.HIGH: wx.Colour(65, 38, 42),  # muted red tint for high slots
     FittingSlot.RIG: '',
     FittingSlot.SUBSYSTEM: ''}
-errColorDark = wx.Colour(70, 20, 20)
+errColorDark = wx.Colour(242, 63, 66)
 slotColourMap = {
     FittingSlot.LOW: wx.Colour(250, 235, 204),  # yellow = low slots
     FittingSlot.MED: wx.Colour(188, 215, 241),  # blue   = mid slots

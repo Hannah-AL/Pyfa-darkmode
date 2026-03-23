@@ -79,7 +79,7 @@ class FloatBox(wx.TextCtrl):
         if self.isValid():
             self.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
         else:
-            self.SetForegroundColour(wx.RED)
+            self.SetForegroundColour(wx.Colour(242, 63, 66))
 
     def isValid(self):
         if self._validator is None:

@@ -77,8 +77,8 @@ class ItemMutatorList(wx.ScrolledWindow):
         self.timer = None
         self.isModified = False
 
-        goodColor = wx.Colour(96, 191, 0)
-        badColor = wx.Colour(255, 64, 0)
+        goodColor = wx.Colour(35, 165, 90)
+        badColor = wx.Colour(242, 63, 66)
         font = parent.GetFont()
         font.SetWeight(wx.BOLD)
 

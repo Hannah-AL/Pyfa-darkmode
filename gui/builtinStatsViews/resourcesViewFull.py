@@ -303,7 +303,7 @@ class ResourcesViewFull(StatsView):
             # See issue #1877
             label.InvalidateBestSize()
 
-        colorWarn = wx.Colour(204, 51, 51)
+        colorWarn = wx.Colour(242, 63, 66)
         colorNormal = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
 
         if usedTurretHardpoints > totalTurretHardpoints:

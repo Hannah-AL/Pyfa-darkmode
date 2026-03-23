@@ -19,7 +19,7 @@ class AttributeGauge(wx.Window):
 
         self.guide_lines = guide_lines
 
-        self._border_colour = wx.BLACK
+        self._border_colour = wx.Colour(30, 31, 34)
 
         self.leading_edge = leading_edge
         self.edge_on_neutral = edge_on_neutral
@@ -41,8 +41,8 @@ class AttributeGauge(wx.Window):
         self._anim_direction = 0
         self.anim_effect = anim_effects.OUT_QUAD
 
-        self.goodColor = wx.Colour(96, 191, 0)
-        self.badColor = wx.Colour(255, 64, 0)
+        self.goodColor = wx.Colour(35, 165, 90)
+        self.badColor = wx.Colour(242, 63, 66)
 
         self.gradient_effect = -35
 
@@ -50,7 +50,7 @@ class AttributeGauge(wx.Window):
         self._old_percentage = 0
         self._show_remaining = False
 
-        self.SetBackgroundColour(wx.Colour(51, 51, 51))
+        self.SetBackgroundColour(wx.Colour(30, 31, 34))
 
         self._tooltip = wx.ToolTip("0.00/100.00")
         self.SetToolTip(self._tooltip)
@@ -210,8 +210,8 @@ class AttributeGauge(wx.Window):
         # set guide_lines every 10 pixels of the main gauge (not including borders)
         if self.guide_lines:
             for x in range(1, 20):
-                dc.SetBrush(wx.Brush(wx.LIGHT_GREY))
-                dc.SetPen(wx.Pen(wx.LIGHT_GREY))
+                dc.SetBrush(wx.Brush(wx.Colour(64, 66, 73)))
+                dc.SetPen(wx.Pen(wx.Colour(64, 66, 73)))
                 dc.DrawRectangle(round(x * 10), 1, 1, round(rect.height))
 
         dc.SetBrush(wx.Brush(colour))
@@ -228,8 +228,8 @@ class AttributeGauge(wx.Window):
             dc.DrawRectangle(round(padding), 1, round(w), round(rect.height))
 
         if self.leading_edge and (self.edge_on_neutral or value != 0):
-            dc.SetPen(wx.Pen(wx.WHITE))
-            dc.SetBrush(wx.Brush(wx.WHITE))
+            dc.SetPen(wx.Pen(wx.Colour(242, 243, 245)))
+            dc.SetBrush(wx.Brush(wx.Colour(242, 243, 245)))
 
             if value > 0:
                 dc.DrawRectangle(round(min(padding + w, rect.width)), 1, 1, round(rect.height))

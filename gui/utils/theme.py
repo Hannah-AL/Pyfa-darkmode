@@ -3,30 +3,30 @@ import wx
 
 from gui.utils.dark import isDark
 
-# Dark colour mappings for wx system colours
+# Discord-inspired dark colour palette
 _DARK_COLOUR_MAP = {
-    wx.SYS_COLOUR_WINDOW: wx.Colour(43, 43, 43),
-    wx.SYS_COLOUR_WINDOWTEXT: wx.Colour(220, 220, 220),
-    wx.SYS_COLOUR_BTNFACE: wx.Colour(51, 51, 51),
-    wx.SYS_COLOUR_3DFACE: wx.Colour(51, 51, 51),
-    wx.SYS_COLOUR_BTNTEXT: wx.Colour(220, 220, 220),
-    wx.SYS_COLOUR_LISTBOX: wx.Colour(43, 43, 43),
-    wx.SYS_COLOUR_LISTBOXTEXT: wx.Colour(220, 220, 220),
-    wx.SYS_COLOUR_HIGHLIGHT: wx.Colour(0, 120, 215),
+    wx.SYS_COLOUR_WINDOW: wx.Colour(49, 51, 56),        # Chat/content background
+    wx.SYS_COLOUR_WINDOWTEXT: wx.Colour(242, 243, 245),  # Primary text
+    wx.SYS_COLOUR_BTNFACE: wx.Colour(43, 45, 49),        # Panel/button background
+    wx.SYS_COLOUR_3DFACE: wx.Colour(43, 45, 49),         # Panel/button background
+    wx.SYS_COLOUR_BTNTEXT: wx.Colour(242, 243, 245),     # Button text
+    wx.SYS_COLOUR_LISTBOX: wx.Colour(30, 31, 34),        # List/input background (darkest)
+    wx.SYS_COLOUR_LISTBOXTEXT: wx.Colour(242, 243, 245), # List text
+    wx.SYS_COLOUR_HIGHLIGHT: wx.Colour(88, 101, 242),    # Blurple selection
     wx.SYS_COLOUR_HIGHLIGHTTEXT: wx.Colour(255, 255, 255),
-    wx.SYS_COLOUR_GRAYTEXT: wx.Colour(140, 140, 140),
-    wx.SYS_COLOUR_CAPTIONTEXT: wx.Colour(220, 220, 220),
-    wx.SYS_COLOUR_BTNHIGHLIGHT: wx.Colour(70, 70, 70),
-    wx.SYS_COLOUR_BTNSHADOW: wx.Colour(30, 30, 30),
-    wx.SYS_COLOUR_3DLIGHT: wx.Colour(70, 70, 70),
-    wx.SYS_COLOUR_3DSHADOW: wx.Colour(30, 30, 30),
-    wx.SYS_COLOUR_MENU: wx.Colour(51, 51, 51),
-    wx.SYS_COLOUR_MENUTEXT: wx.Colour(220, 220, 220),
-    wx.SYS_COLOUR_MENUBAR: wx.Colour(51, 51, 51),
-    wx.SYS_COLOUR_SCROLLBAR: wx.Colour(60, 60, 60),
-    wx.SYS_COLOUR_APPWORKSPACE: wx.Colour(43, 43, 43),
-    wx.SYS_COLOUR_INFOBK: wx.Colour(60, 60, 60),
-    wx.SYS_COLOUR_INFOTEXT: wx.Colour(220, 220, 220),
+    wx.SYS_COLOUR_GRAYTEXT: wx.Colour(148, 155, 164),    # Muted text
+    wx.SYS_COLOUR_CAPTIONTEXT: wx.Colour(242, 243, 245),
+    wx.SYS_COLOUR_BTNHIGHLIGHT: wx.Colour(64, 66, 73),   # Hover highlight
+    wx.SYS_COLOUR_BTNSHADOW: wx.Colour(30, 31, 34),      # Deepest shadow
+    wx.SYS_COLOUR_3DLIGHT: wx.Colour(64, 66, 73),
+    wx.SYS_COLOUR_3DSHADOW: wx.Colour(30, 31, 34),
+    wx.SYS_COLOUR_MENU: wx.Colour(43, 45, 49),           # Menu background
+    wx.SYS_COLOUR_MENUTEXT: wx.Colour(242, 243, 245),
+    wx.SYS_COLOUR_MENUBAR: wx.Colour(30, 31, 34),        # Menubar (darkest)
+    wx.SYS_COLOUR_SCROLLBAR: wx.Colour(56, 58, 64),      # Scrollbar
+    wx.SYS_COLOUR_APPWORKSPACE: wx.Colour(30, 31, 34),   # Darkest background
+    wx.SYS_COLOUR_INFOBK: wx.Colour(56, 58, 64),         # Tooltip background
+    wx.SYS_COLOUR_INFOTEXT: wx.Colour(242, 243, 245),    # Tooltip text
 }
 
 # Store the original GetColour so we can call it for unmapped colours
@@ -59,7 +59,7 @@ def applyThemeToWindow(window):
         return
     bg = _DARK_COLOUR_MAP[wx.SYS_COLOUR_WINDOW]
     fg = _DARK_COLOUR_MAP[wx.SYS_COLOUR_WINDOWTEXT]
-    inputBg = _DARK_COLOUR_MAP.get(wx.SYS_COLOUR_LISTBOX, bg)
+    inputBg = _DARK_COLOUR_MAP[wx.SYS_COLOUR_LISTBOX]
     _applyRecursive(window, bg, fg, inputBg)
 
 
