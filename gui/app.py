@@ -13,18 +13,20 @@ class PyfaApp(wx.App):
         Do application initialization work, e.g. define application globals.
         """
 
+        # Install dark mode theme colour overrides
+        from gui.utils.theme import applyTheme
+        applyTheme()
+
         # Enable native dark mode on Windows when appropriate
         if 'wxMSW' in wx.PlatformInfo:
             try:
-                displaySettings = SettingsProvider.getInstance().getSettings(
-                    "pyfaDisplay", {"darkModeOverride": "system"})
-                override = displaySettings["darkModeOverride"]
-                if override != "light":
-                    self.MSWEnableDarkMode()
+                from gui.utils.dark import isDark
+                if isDark():
+                    self.MSWEnableDarkMode(2)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except:
-                pass
+            except Exception as e:
+                pyfalog.warning("Failed to enable MSW dark mode: {}", e)
 
         # Name for my application.
         self.appName = "pyfa"

@@ -58,6 +58,8 @@ class PFDisplayPref(PreferenceView):
             self.displaySettings["darkModeOverride"] = "dark"
         else:
             self.displaySettings["darkModeOverride"] = "system"
+        # Save immediately so the setting persists for next restart
+        self.displaySettings.save()
         event.Skip()
 
     def getImage(self):
