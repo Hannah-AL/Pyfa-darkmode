@@ -88,7 +88,7 @@ class StatsPane(wx.Panel):
             self.SetWindowVariant(wx.WINDOW_VARIANT_SMALL)
         else:
             standardFont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
-            standardFont.SetPointSize(8)
+            standardFont.SetPointSize(9)
             self.SetFont(standardFont)
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -120,10 +120,10 @@ class StatsPane(wx.Panel):
 
             contentPanel.Bind(wx.EVT_CONTEXT_MENU, self.contextHandler(contentPanel, tp))
 
-            mainSizer.Add(tp, 0, wx.EXPAND | wx.LEFT, 3)
+            mainSizer.Add(tp, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 5)
             if i < maxviews - 1:
                 mainSizer.Add(wx.StaticLine(self, wx.ID_ANY, style=wx.HORIZONTAL), 0,
-                              wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 2)
+                              wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 5)
             i += 1
             tp.OnStateChange(tp.GetBestSize())
 

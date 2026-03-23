@@ -113,10 +113,7 @@ class ChromeNotebook(wx.Panel):
         self.tabs_container = _TabsContainer(self, can_add=can_add, tabWidthMode=tabWidthMode)
         tabs_sizer.Add(self.tabs_container, 0, wx.EXPAND)
 
-        if 'wxMSW' in wx.PlatformInfo:
-            style = wx.DOUBLE_BORDER
-        else:
-            style = wx.SIMPLE_BORDER
+        style = wx.BORDER_SIMPLE
 
         back_color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
 
@@ -345,26 +342,22 @@ class ChromeNotebook(wx.Panel):
 
 
 class _TabRenderer:
+    CORNER_RADIUS = 6
+
     def __init__(self, size=(36, 24), text=wx.EmptyString, img: wx.Image=None,
                  closeable=True):
 
-        # tab left/right zones inclination
-        self.ctab_left = BitmapLoader.getImage("ctableft", "gui")
-        self.ctab_middle = BitmapLoader.getImage("ctabmiddle", "gui")
-        self.ctab_right = BitmapLoader.getImage("ctabright", "gui")
         self.ctab_close = BitmapLoader.getImage("ctabclose", "gui")
-
-        self.left_width = self.ctab_left.GetWidth()
-        self.right_width = self.ctab_right.GetWidth()
-        self.middle_width = self.ctab_middle.GetWidth()
         self.close_btn_width = self.ctab_close.GetWidth()
 
         width, height = size
 
-        self.min_width = self.left_width + self.right_width + self.middle_width
-        self.min_height = self.ctab_middle.GetHeight()
+        self.left_width = 8
+        self.right_width = 8
 
-        # set minimum width and height to what is allotted to images
+        self.min_width = 60
+        self.min_height = 24
+
         width = max(width, self.min_width)
         height = max(height, self.min_height)
 
@@ -377,11 +370,11 @@ class _TabRenderer:
         self.close_btn_hovering = False
         self.tab_bitmap = None
         self.tab_back_bitmap = None
-        self.padding = 4
+        self.padding = 6
         self.font = wx.Font(fonts.NORMAL, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
 
         self.tab_img = img
-        self.position = (0, 0)  # Not used internally for rendering - helper for tab container
+        self.position = (0, 0)
         self.InitTab()
 
     @property
@@ -477,123 +470,78 @@ class _TabRenderer:
         self.close_region = None
 
         self.InitColors()
-        self.InitBitmaps()
 
-        self.ComposeTabBack()
+        self.ctab_close_bmp = wx.Bitmap(self.ctab_close)
+        self.tab_back_bitmap = wx.Bitmap(round(self.tab_width), round(self.tab_height))
+
         self.InitTabRegions()
         self._Render()
 
-    def InitBitmaps(self):
-        """
-        Creates bitmap for tab
-
-        Takes the bitmaps already set and replaces a known color (black) with
-        the needed color, while also considering selected state. Color dependant
-        on platform -- see InitColors().
-        """
-        if self.selected:
-            tr, tg, tb, ta = self.selected_color
-        else:
-            tr, tg, tb, ta = self.inactive_color
-
-        ctab_left = self.ctab_left.Copy()
-        ctab_right = self.ctab_right.Copy()
-        ctab_middle = self.ctab_middle.Copy()
-
-        ctab_left.Replace(0, 0, 0, tr, tg, tb)
-        ctab_right.Replace(0, 0, 0, tr, tg, tb)
-        ctab_middle.Replace(0, 0, 0, tr, tg, tb)
-
-        self.ctab_left_bmp = wx.Bitmap(ctab_left)
-        self.ctab_right_bmp = wx.Bitmap(ctab_right)
-        self.ctab_middle_bmp = wx.Bitmap(ctab_middle)
-        self.ctab_close_bmp = wx.Bitmap(self.ctab_close)
-
-    def ComposeTabBack(self):
-        """
-        Creates the tab background bitmap based upon calculated dimension values
-        and modified bitmaps via InitBitmaps()
-        """
-        bk_bmp = wx.Bitmap(round(self.tab_width), round(self.tab_height))
-
-        mdc = wx.MemoryDC()
-        mdc.SelectObject(bk_bmp)
-        mdc.Clear()
-
-        # draw the left bitmap
-        mdc.DrawBitmap(self.ctab_left_bmp, 0, 0)
-
-        # convert middle bitmap and scale to tab width
-        cm = self.ctab_middle_bmp.ConvertToImage()
-        mimg = cm.Scale(round(self.content_width), round(self.ctab_middle.GetHeight()),
-                        wx.IMAGE_QUALITY_NORMAL)
-        mbmp = wx.Bitmap(mimg)
-
-        # draw middle bitmap, offset by left
-        mdc.DrawBitmap(mbmp, round(self.left_width), 0)
-
-        # draw right bitmap offset by left + middle
-        mdc.DrawBitmap(self.ctab_right_bmp,
-                       round(self.content_width + self.left_width), 0)
-
-        mdc.SelectObject(wx.NullBitmap)
-
-        if self.tab_back_bitmap:
-            del self.tab_back_bitmap
-
-        self.tab_back_bitmap = bk_bmp
-
     def InitTabRegions(self):
-        """
-        Initializes regions for tab, which makes it easier to determine if
-        given coordinates are included in a region
-        """
-        self.tab_region = wx.Region(self.tab_back_bitmap)
-        self.close_region = wx.Region(self.ctab_close_bmp)
-
-        x_offset = self.content_width \
-            + self.left_width \
-            - self.ctab_close_bmp.GetWidth() / 2
-        y_offset = (self.tab_height - self.ctab_close_bmp.GetHeight()) / 2
-        self.close_region.Offset(round(x_offset), round(y_offset))
+        """Simple rectangular regions for modern flat tabs"""
+        self.tab_region = wx.Region(0, 0, round(self.tab_width), round(self.tab_height))
+        cbw = self.ctab_close_bmp.GetWidth()
+        cbh = self.ctab_close_bmp.GetHeight()
+        x_offset = round(self.tab_width - self.right_width - cbw / 2)
+        y_offset = round((self.tab_height - cbh) / 2)
+        self.close_region = wx.Region(x_offset, y_offset, cbw, cbh)
 
     def InitColors(self):
         """Determines colors used for tab, based on system settings"""
         self.tab_color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DFACE)
-        self.inactive_color = color_utils.GetSuitable(self.tab_color, 0.25)
-        self.selected_color = color_utils.GetSuitable(self.tab_color, 0.10)
+        # Selected tab matches content area for seamless look
+        self.selected_color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
+        self.inactive_color = self.tab_color
 
     def Render(self):
         return self.tab_bitmap
 
     def _Render(self):
-        """Renders the tab, complete with the icon, text, and close button"""
+        """Renders modern flat tab with rounded top corners"""
         if self.tab_bitmap:
             del self.tab_bitmap
 
-        height = self.tab_height
+        w = round(self.tab_width)
+        h = round(self.tab_height)
+        r = self.CORNER_RADIUS
 
-        canvas = wx.Bitmap(round(self.tab_width), round(self.tab_height), 24)
-
+        canvas = wx.Bitmap(w, h, 32)
         mdc = wx.MemoryDC()
-
         mdc.SelectObject(canvas)
+
+        # Fill with transparent background (tab bar color)
+        mdc.SetBackground(wx.Brush(self.tab_color))
         mdc.Clear()
 
-        mdc.DrawBitmap(self.tab_back_bitmap, 0, 0, True)
+        # Draw rounded-top rectangle using GraphicsContext
+        gc = wx.GraphicsContext.Create(mdc)
+        if gc:
+            fill_color = self.selected_color if self.selected else self.inactive_color
+            path = gc.CreatePath()
+            # Start bottom-left, go up, round top-left, across, round top-right, down
+            path.MoveToPoint(0, h)
+            path.AddLineToPoint(0, r)
+            path.AddArc(r, r, r, math.pi, 1.5 * math.pi, True)
+            path.AddLineToPoint(w - r, 0)
+            path.AddArc(w - r, r, r, 1.5 * math.pi, 0, True)
+            path.AddLineToPoint(w, h)
+            path.CloseSubpath()
 
-        # draw the tab icon
+            gc.SetBrush(wx.Brush(fill_color))
+            gc.SetPen(wx.TRANSPARENT_PEN)
+            gc.DrawPath(path)
+            del gc
+
+        # Draw tab icon
         if self.tab_img:
             bmp = wx.Bitmap(self.tab_img.ConvertToGreyscale() if self.disabled else self.tab_img)
-            # @todo: is this conditional relevant anymore?
             if self.content_width > 16:
-                # Draw tab icon
                 mdc.DrawBitmap(
                     bmp,
                     round(self.left_width + self.padding - bmp.GetWidth() / 2),
-                    round((height - bmp.GetHeight()) / 2))
+                    round((h - bmp.GetHeight()) / 2))
 
-        # draw close button
+        # Draw close button
         if self.closeable:
             if self.close_btn_hovering:
                 cbmp = self.ctab_close_bmp
@@ -604,19 +552,16 @@ class _TabRenderer:
 
             mdc.DrawBitmap(
                 cbmp,
-                round(self.content_width + self.left_width - cbmp.GetWidth() / 2),
-                round((height - cbmp.GetHeight()) / 2))
+                round(self.tab_width - self.right_width - cbmp.GetWidth() / 2),
+                round((h - cbmp.GetHeight()) / 2))
 
         mdc.SelectObject(wx.NullBitmap)
 
-        canvas.SetMaskColour((0x12, 0x23, 0x32))
         img = canvas.ConvertToImage()
-
         if not img.HasAlpha():
             img.InitAlpha()
 
-        bmp = wx.Bitmap(img)
-        self.tab_bitmap = bmp
+        self.tab_bitmap = wx.Bitmap(img)
 
     # We draw the text separately in order to draw it directly on the native DC, rather than a memory one, because
     # drawing text on a memory DC draws it blurry on HD/Retina screens
@@ -625,7 +570,7 @@ class _TabRenderer:
         dc.SetFont(self.font)
 
         if self.tab_img:
-            text_start = self.left_width + self.padding + self.tab_img.GetWidth() / 2
+            text_start = self.left_width + self.padding + self.tab_img.GetWidth() / 2 + 2
         else:
             text_start = self.left_width
 
@@ -737,8 +682,8 @@ class _TabsContainer(wx.Panel):
         self.start_drag = False
         self.dragging = False
 
-        # amount of overlap of tabs?
-        self.inclination = 7
+        # spacing between tabs (modern: no overlap, small gap)
+        self.inclination = 0
 
         if can_add:
             self.reserved = 48
@@ -1180,19 +1125,9 @@ class _TabsContainer(wx.Panel):
     def OnPaint(self, event):
         mdc = wx.AutoBufferedPaintDC(self)
 
-        # if 'wxMac' in wx.PlatformInfo:
-        #     color = wx.Colour(0, 0, 0)
-        #     brush = wx.Brush(color)
-        #     # @todo: what needs to be changed with wxPheonix?
-        #     from Carbon.Appearance import kThemeBrushDialogBackgroundActive
-        #     brush.MacSetTheme(kThemeBrushDialogBackgroundActive)
-        # else:
         color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DFACE)
-        brush = wx.Brush(color)
-
-        if "wxGTK" not in wx.PlatformInfo:
-            mdc.SetBackground(brush)
-            mdc.Clear()
+        mdc.SetBackground(wx.Brush(color))
+        mdc.Clear()
 
         selected = None
 
@@ -1200,18 +1135,14 @@ class _TabsContainer(wx.Panel):
             ax, ay = self.add_button.GetPosition()
             mdc.DrawBitmap(self.add_button.Render(), round(ax), round(ay), True)
 
+        # Draw inactive tabs first
         for i in range(len(self.tabs) - 1, -1, -1):
             tab = self.tabs[i]
             posx, posy = tab.GetPosition()
 
             if not tab.IsSelected():
-                # drop shadow first
-                mdc.DrawBitmap(self.fxBmps[tab], round(posx), (posy), True)
                 bmp = tab.Render()
-                img = bmp.ConvertToImage()
-                img = img.AdjustChannels(1, 1, 1, 0.85)
-                bmp = wx.Bitmap(img)
-                mdc.DrawBitmap(bmp, round(posx), (posy), True)
+                mdc.DrawBitmap(bmp, round(posx), round(posy), True)
 
                 mdc.SetDeviceOrigin(round(posx), round(posy))
                 tab.DrawText(mdc)
@@ -1219,13 +1150,9 @@ class _TabsContainer(wx.Panel):
             else:
                 selected = tab
 
-        # we draw selected tab separately (instead of in else) so as to not hide
-        # the front bit behind the preceding tab
+        # Draw selected tab on top
         if selected:
             posx, posy = selected.GetPosition()
-            # drop shadow first
-            mdc.DrawBitmap(self.fxBmps[selected], round(posx), round(posy), True)
-
             bmp = selected.Render()
 
             if self.dragging:
@@ -1239,26 +1166,27 @@ class _TabsContainer(wx.Panel):
             selected.DrawText(mdc)
             mdc.SetDeviceOrigin(0, 0)
 
+        # Draw a subtle bottom border line, skipping the selected tab
+        borderColor = wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNSHADOW)
+        mdc.SetPen(wx.Pen(borderColor))
+        w, h = self.GetSize()
+        if selected:
+            sx, _ = selected.GetPosition()
+            sw, _ = selected.GetSize()
+            # Line before selected tab
+            if sx > 0:
+                mdc.DrawLine(0, h - 1, round(sx), h - 1)
+            # Line after selected tab
+            mdc.DrawLine(round(sx + sw), h - 1, w, h - 1)
+        else:
+            mdc.DrawLine(0, h - 1, w, h - 1)
+
     def OnErase(self, event):
         pass
 
     def UpdateTabFX(self):
-        """ Updates tab drop shadow bitmap """
+        """No-op: modern flat tabs don't use drop shadows"""
         self.fxBmps.clear()
-        for tab in self.tabs:
-            tabW, tabH = tab.tab_size
-            self.fxBmps[tab] = self.GetTabFx(tabW, self.height + 1)
-
-    @lru_cache(maxsize=50)
-    def GetTabFx(self, width, height):
-        renderer = _TabRenderer((width, height))
-        fx_bmp = renderer.Render()
-        img = fx_bmp.ConvertToImage()
-        if not img.HasAlpha():
-            img.InitAlpha()
-        img = img.Blur(2)
-        img = img.AdjustChannels(0.3, 0.3, 0.3, 0.35)
-        return wx.Bitmap(img)
 
     def AddTab(self, title=wx.EmptyString, img=None, closeable=False):
         self.ClearTabsSelected()
